@@ -2,10 +2,12 @@
 import { toYmd, type PlainDate } from '../date';
 import type { LocalizedText } from '../text';
 import { cnHolidayName } from './names';
+import { STATUTORY_RULES_SINCE, statutoryDaysOfYear } from './statutory';
 import type { CnDayKind, CnHolidayFile, CnHolidayId } from './types';
 
 export type { CnDayKind, CnHolidayFile, CnHolidayId } from './types';
-export { CN_HOLIDAY_NAMES } from './names';
+export { CN_HOLIDAY_NAMES, cnHolidayName } from './names';
+export { statutoryDaysOfYear } from './statutory';
 
 export interface CnHolidayDay {
   date: PlainDate;
@@ -62,6 +64,18 @@ export function cnYearStatus(year: number): CnYearStatus {
 
 export function cnYearStatusOf(date: PlainDate): CnYearStatus {
   return cnYearStatus(toYmd(date).year);
+}
+
+/**
+ * 安排尚未公布的年份：按现行放假办法返回当天的法定节日（不含调休）。
+ * 已公布或无数据的年份返回空数组。
+ */
+export function cnStatutoryIdsOn(date: PlainDate): CnHolidayId[] {
+  const { year } = toYmd(date);
+  if (cnYearStatus(year) !== 'unpublished' || year < STATUTORY_RULES_SINCE) return [];
+  return statutoryDaysOfYear(year)
+    .filter((d) => d.date === date)
+    .map((d) => d.id);
 }
 
 /** 测试用：遍历所有已加载的数据文件 */

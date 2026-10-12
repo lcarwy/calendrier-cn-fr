@@ -4,8 +4,10 @@ import {
   CN_FIRST_DATA_YEAR,
   CN_LAST_PUBLISHED_YEAR,
   cnHolidayDayOn,
+  cnStatutoryIdsOn,
   cnYearStatus,
   loadedCnHolidayFiles,
+  statutoryDaysOfYear,
 } from './index';
 
 const d = (s: string) => s as PlainDate;
@@ -75,5 +77,38 @@ describe('数据文件完整性', () => {
           expect(weekday(entry.date as PlainDate)).toBeGreaterThanOrEqual(6);
       }
     }
+  });
+});
+
+describe('现行放假办法的法定节日（2025 年起，13 天）', () => {
+  it('2026 年的 13 天', () => {
+    const days = statutoryDaysOfYear(2026);
+    expect(days).toHaveLength(13);
+    expect(days.filter((x) => x.id === 'spring-festival').map((x) => x.date)).toEqual([
+      '2026-02-16',
+      '2026-02-17',
+      '2026-02-18',
+      '2026-02-19',
+    ]);
+    const single = (id: string) => days.find((x) => x.id === id)?.date;
+    expect(single('qingming')).toBe('2026-04-05');
+    expect(single('dragon-boat')).toBe('2026-06-19');
+    expect(single('mid-autumn')).toBe('2026-09-25');
+  });
+
+  it('已公布年份（2025 起）的数据必须让每个法定节日都放假', () => {
+    for (let year = 2025; year <= CN_LAST_PUBLISHED_YEAR; year++) {
+      for (const { date, id } of statutoryDaysOfYear(year)) {
+        expect(cnHolidayDayOn(date)?.kind, `${year} ${id} ${date}`).toBe('off');
+      }
+    }
+  });
+
+  it('只在"未公布"的年份给出法定节日提示', () => {
+    const next = CN_LAST_PUBLISHED_YEAR + 1;
+    const midAutumn = statutoryDaysOfYear(next).find((x) => x.id === 'mid-autumn')!.date;
+    expect(cnStatutoryIdsOn(midAutumn)).toContain('mid-autumn');
+    expect(cnStatutoryIdsOn(d('2026-09-25'))).toEqual([]);
+    expect(cnStatutoryIdsOn(d('2019-10-01'))).toEqual([]);
   });
 });
