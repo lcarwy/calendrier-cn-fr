@@ -288,7 +288,7 @@ push 到 `main` 会触发 `.github/workflows/deploy.yml`：格式检查 → 测�
 每完成一步就勾选并提交。
 
 - [x] 0. 初始化：git、Vite + Preact + TS、Vitest、Prettier、GitHub 仓库、Pages 自动部署（占位页）
-- [ ] 1. 日期基础层 `src/domain/date`：PlainDate 工具、42 格月视图、ISO 周
+- [x] 1. 日期基础层 `src/domain/date`：PlainDate 工具、42 格月视图、ISO 周
 - [ ] 2. 法国假日计算（metropole、alsace-moselle）+ 官方数据集比对测试
 - [ ] 3. 中国假日同步脚本 + 校验 + 2020 年起的数据 + 未公布年份显示
 - [ ] 4. 农历 / 节气 / 传统节日适配层（tyme4ts）
