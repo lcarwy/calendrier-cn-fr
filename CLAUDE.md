@@ -149,7 +149,7 @@ interface DayInfo {
 
 ### 6.1 规则（代码计算）
 
-复活节用格里历算法（Meeus/Jones/Butcher）。规则表每条带 `zones` 和可选 `since` / `until` 年份，以便法律变更时版本化。
+复活节用格里历算法（Meeus/Jones/Butcher）。规则表在 `src/domain/fr-holidays/index.ts`，每条带 `zones`；以后法律若有变化，再给规则加 `since` / `until` 年份字段。同一天可能有两个假日（如 2008-05-01 = Fête du Travail + Ascension），两个都要保留。
 
 | 名称 | 日期 | 地区 |
 |---|---|---|
@@ -289,7 +289,7 @@ push 到 `main` 会触发 `.github/workflows/deploy.yml`：格式检查 → 测�
 
 - [x] 0. 初始化：git、Vite + Preact + TS、Vitest、Prettier、GitHub 仓库、Pages 自动部署（占位页）
 - [x] 1. 日期基础层 `src/domain/date`：PlainDate 工具、42 格月视图、ISO 周
-- [ ] 2. 法国假日计算（metropole、alsace-moselle）+ 官方数据集比对测试
+- [x] 2. 法国假日计算（metropole、alsace-moselle）+ 官方数据集比对测试
 - [ ] 3. 中国假日同步脚本 + 校验 + 2020 年起的数据 + 未公布年份显示
 - [ ] 4. 农历 / 节气 / 传统节日适配层（tyme4ts）
 - [ ] 5. `getDayInfo` 合并层
