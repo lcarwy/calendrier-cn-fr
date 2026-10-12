@@ -69,19 +69,21 @@
    └─ sync-cn-holidays.yml  # 定时同步，有变化则开 PR
 ```
 
-**架构核心**：`getDayInfo(date, settings) → DayInfo` 是唯一的合并点，UI 只消费 `DayInfo`，不直接调用各数据源。
+**架构核心**：`src/domain/day-info.ts` 的 `getDayInfo(date, settings) → DayInfo` 是唯一的合并点，UI 只消费 `DayInfo`，不直接调用各数据源。日格副标题由 `cellLabel(info, layers)` 决定（优先级见 §7）。
 
 ```ts
 interface DayInfo {
   date: PlainDate;              // 'YYYY-MM-DD'
-  weekday: 1..7;                // 1 = 周一
-  isoWeek: number;
-  lunar: { monthLabel: string; dayLabel: string; isLeapMonth: boolean; isFirstDay: boolean };
-  solarTerm?: SolarTermInfo;
-  cnFestivals: Festival[];      // 传统节日 + 公历节日
-  cnHoliday?: { name: string; kind: 'off' | 'work' | 'statutory-unpublished' };
+  weekday: Weekday;             // 1 = 周一 … 7 = 周日
+  isWeekend: boolean;
+  isoWeek: { year: number; week: number };
+  lunar: LunarDate;             // 农历年月日、月名、日名、干支、生肖
+  solarTerm?: SolarTermInfo;    // 当天交节才有，含交节时刻（UTC 毫秒）
+  cnFestivals: CnFestival[];    // 传统节日
+  cnHoliday?: CnHolidayMark;    // kind: 'off' | 'work' | 'statutory-unpublished'
+  cnYearStatus: 'published' | 'unpublished' | 'unavailable';
   frHolidays: FrHoliday[];
-  events: EventOccurrence[];
+  // events 在第 8 步加入
 }
 ```
 
@@ -302,7 +304,7 @@ push 到 `main` 会触发 `.github/workflows/deploy.yml`：格式检查 → 测�
 - [x] 2. 法国假日计算（metropole、alsace-moselle）+ 官方数据集比对测试
 - [x] 3. 中国假日同步脚本 + 校验 + 2020 年起的数据（未公布年份的法定节日依赖农历，放到第 4 步）
 - [x] 4. 农历 / 节气 / 传统节日适配层（tyme4ts）+ 未公布年份的法定节日
-- [ ] 5. `getDayInfo` 合并层
+- [x] 5. `getDayInfo` 合并层
 - [ ] 6. 月视图 UI、日详情、移动端、深色模式、图例
 - [ ] 7. 设置（法国地区、图层开关、主题）+ 持久化
 - [ ] 8. 自定义事件：IndexedDB、增删改、多日、每年重复
