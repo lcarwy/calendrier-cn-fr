@@ -1,17 +1,23 @@
 :root {
   color-scheme: light dark;
 
-  --bg: #fafaf9;
+  --bg: #f7f6f3;
   --surface: #ffffff;
   --fg: #1c1917;
-  --muted: #78716c;
-  --border: #e7e5e4;
+  --muted: #6b6560;
+  --border: #e4e1dc;
+  --weekend-bg: #f3f1ed;
+  --accent: #1c1917;
 
-  /* 语义色：中国放假 / 中国补班 / 法国假日 / 今天 */
-  --cn-off: #b91c1c;
-  --cn-work: #44403c;
-  --fr-holiday: #1d4ed8;
-  --today: #ca8a04;
+  /* 语义色：中国放假 / 中国补班 / 法国假日 / 节气 / 今天 */
+  --cn-off: #c0262d;
+  --cn-off-bg: #fdecec;
+  --cn-work: #3f3a36;
+  --fr-holiday: #1f4fd1;
+  --fr-holiday-bg: #e9effd;
+  --term: #2f7d3a;
+  --today: #c0262d;
+  --on-today: #ffffff;
 
   --radius: 10px;
   --font:
@@ -21,28 +27,40 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #1c1917;
-    --surface: #292524;
-    --fg: #f5f5f4;
-    --muted: #a8a29e;
-    --border: #44403c;
-    --cn-off: #f87171;
-    --cn-work: #d6d3d1;
-    --fr-holiday: #60a5fa;
-    --today: #facc15;
+    --bg: #161412;
+    --surface: #211e1b;
+    --fg: #f2efeb;
+    --muted: #a39d96;
+    --border: #3a3531;
+    --weekend-bg: #1b1916;
+    --accent: #f2efeb;
+    --cn-off: #ff7b7b;
+    --cn-off-bg: #3a1d1d;
+    --cn-work: #d9d4ce;
+    --fr-holiday: #8fb0ff;
+    --fr-holiday-bg: #1b2440;
+    --term: #7fcf8b;
+    --today: #ff7b7b;
+    --on-today: #161412;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #1c1917;
-  --surface: #292524;
-  --fg: #f5f5f4;
-  --muted: #a8a29e;
-  --border: #44403c;
-  --cn-off: #f87171;
-  --cn-work: #d6d3d1;
-  --fr-holiday: #60a5fa;
-  --today: #facc15;
+  --bg: #161412;
+  --surface: #211e1b;
+  --fg: #f2efeb;
+  --muted: #a39d96;
+  --border: #3a3531;
+  --weekend-bg: #1b1916;
+  --accent: #f2efeb;
+  --cn-off: #ff7b7b;
+  --cn-off-bg: #3a1d1d;
+  --cn-work: #d9d4ce;
+  --fr-holiday: #8fb0ff;
+  --fr-holiday-bg: #1b2440;
+  --term: #7fcf8b;
+  --today: #ff7b7b;
+  --on-today: #161412;
 }
 
 *,
@@ -65,12 +83,30 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-.placeholder {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: 3rem 1rem;
+a {
+  color: var(--fr-holiday);
 }
 
-.placeholder p {
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--fr-holiday);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.muted {
   color: var(--muted);
 }

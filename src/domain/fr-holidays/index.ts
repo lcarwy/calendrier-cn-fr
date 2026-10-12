@@ -49,7 +49,7 @@ const fromEaster = (offset: number) => (year: number) => addDays(easterSunday(ye
 const RULES: readonly Rule[] = [
   {
     id: 'jour-de-l-an',
-    name: { fr: "Jour de l'An", zh: '元旦', en: "New Year's Day" },
+    name: { fr: 'Jour de l’An', zh: '元旦', en: "New Year's Day" },
     date: fixed(1, 1),
   },
   {
