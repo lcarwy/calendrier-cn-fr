@@ -104,7 +104,9 @@ interface DayInfo {
 - **未公布年份也有文件**：如 `2027.json` 存在但 `papers` 和 `days` 都是空数组 → 视为"未公布"，不能当作"该年没有假期"。
 - **年份按通知标题归属，不按日期**：某年通知可能包含上一年 12 月的日期（如元旦补班）。客户端必须把所有年份的文件合并成一个 `date → entry` 映射再查询，不能只查当年文件。
 - **只列出通知明确提到的日期**：与假期相连但通知没写的普通周末可能不在列表里。
-- `isOffDay: false` 的条目就是补班日。
+- `isOffDay: false` 且在周末的条目就是补班日。
+- **中秋国庆连休时名称合并**为"国庆节、中秋节"（2020、2023、2025 年），要按"、"拆成多个 id。
+- **工作日也可能被标为上班**：如 2020-02-03（疫情延长春节后的"正常上班"）。这不是补班，忽略并警告。
 
 ### 5.3 同步流程（每年更新机制）
 
@@ -114,28 +116,32 @@ interface DayInfo {
 4. GITHUB_TOKEN 创建的 PR 不会触发其他 workflow，所以**校验必须在同步 workflow 内完成**，失败则不开 PR 并让 workflow 报错。
 5. 仓库设置需开启 "Allow GitHub Actions to create and approve pull requests"。
 
-**校验规则**（任一失败即中止，不开 PR）：
-- `papers` 非空，且链接域名为 `gov.cn`（否则视为未公布，跳过该年）
-- 日期合法、唯一、已排序
-- 每个补班日（`isOffDay: false`）必须是周六或周日
-- 节日名称属于已知集合（元旦、春节、清明节、劳动节、端午节、中秋节、国庆节）；出现未知名称（如 2015 年抗战胜利纪念日）只**警告**，PR 中标注
-- 每个已知节日的法定日必须被标为放假（如 2025 年起 5 月 1、2 日）
-- 不得删除已发布年份的数据，除非上游 `papers` 也变了（年中调整），PR 中显式说明
+**校验规则**（实现见 `scripts/lib/cn-holidays.ts`；错误 = 该年不写入且退出码 1，警告 = 写入但在报告中标出）：
+- 错误：`papers` 为空或链接域名不是 `gov.cn`；日期不合法、重复、超出 `上一年-12-01 .. 当年-12-31`；2025 年起 1/1、5/1、5/2、10/1–10/3 没有标为放假；本地已有数据而上游变成空文件
+- 警告：未知节日名称（如 2015 年抗战胜利纪念日，记为 `other`）；七个法定节日缺少某一个；工作日被标为上班（忽略该条）
+- 农历相关的法定日（除夕至初三、清明、端午、中秋）由应用侧单测对照农历库检查
+- 上游 `papers` 和 `days` 都为空 = 未公布，不写文件
 
 ### 5.4 规范化数据格式（`src/data/cn-holidays/YYYY.json`）
 
-```json
+由脚本生成，每个日期一行（便于在 PR 中逐行对照），Prettier 忽略此目录。**文件存在 = 该年已公布。**
+
+```
 {
   "year": 2026,
-  "status": "published",
   "source": "holiday-cn",
-  "papers": ["https://www.gov.cn/zhengce/zhengceku/202511/content_7047091.htm"],
-  "syncedAt": "2025-11-05T03:00:00Z",
-  "days": [{ "date": "2026-02-14", "name": "春节", "kind": "work" }]
+  "papers": [
+    "https://www.gov.cn/zhengce/zhengceku/202511/content_7047091.htm"
+  ],
+  "days": [
+    {"date":"2026-02-14","ids":["spring-festival"],"name":"春节","kind":"work"},
+    {"date":"2025-10-01","ids":["national-day","mid-autumn"],"name":"国庆节、中秋节","kind":"off"}
+  ]
 }
 ```
-- `kind`: `"off"`（休）| `"work"`（班）
-- 例外：上游长期滞后时可手工录入，`source` 设为 `"manual"` 并填 gov.cn 链接；同步脚本遇到 `manual` 文件不覆盖，只在上游数据不一致时在 PR 里报差异。
+- `kind`: `"off"`（休）| `"work"`（班）；`ids` 见 `src/domain/cn-holidays/types.ts`
+- 目前数据范围：2020 年起。早于 2020 年显示"无数据"。
+- 例外：上游长期滞后时可手工录入，`source` 设为 `"manual"` 并填 gov.cn 链接；同步脚本遇到 `manual` 文件不覆盖，只在上游数据不一致时报告差异。
 
 ### 5.5 显示规则
 
@@ -290,7 +296,7 @@ push 到 `main` 会触发 `.github/workflows/deploy.yml`：格式检查 → 测�
 - [x] 0. 初始化：git、Vite + Preact + TS、Vitest、Prettier、GitHub 仓库、Pages 自动部署（占位页）
 - [x] 1. 日期基础层 `src/domain/date`：PlainDate 工具、42 格月视图、ISO 周
 - [x] 2. 法国假日计算（metropole、alsace-moselle）+ 官方数据集比对测试
-- [ ] 3. 中国假日同步脚本 + 校验 + 2020 年起的数据 + 未公布年份显示
+- [x] 3. 中国假日同步脚本 + 校验 + 2020 年起的数据（未公布年份的法定节日依赖农历，放到第 4 步）
 - [ ] 4. 农历 / 节气 / 传统节日适配层（tyme4ts）
 - [ ] 5. `getDayInfo` 合并层
 - [ ] 6. 月视图 UI、日详情、移动端、深色模式、图例

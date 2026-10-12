@@ -2,4 +2,6 @@ dist/
 dev-dist/
 coverage/
 package-lock.json
+# 由 scripts/sync-cn-holidays.ts 生成，格式固定为每天一行
+src/data/
 *.md

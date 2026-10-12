@@ -1,0 +1,43 @@
+{
+  "year": 2023,
+  "source": "holiday-cn",
+  "papers": [
+    "http://www.gov.cn/zhengce/zhengceku/2022-12/08/content_5730844.htm"
+  ],
+  "days": [
+    {"date":"2022-12-31","ids":["new-year"],"name":"元旦","kind":"off"},
+    {"date":"2023-01-01","ids":["new-year"],"name":"元旦","kind":"off"},
+    {"date":"2023-01-02","ids":["new-year"],"name":"元旦","kind":"off"},
+    {"date":"2023-01-21","ids":["spring-festival"],"name":"春节","kind":"off"},
+    {"date":"2023-01-22","ids":["spring-festival"],"name":"春节","kind":"off"},
+    {"date":"2023-01-23","ids":["spring-festival"],"name":"春节","kind":"off"},
+    {"date":"2023-01-24","ids":["spring-festival"],"name":"春节","kind":"off"},
+    {"date":"2023-01-25","ids":["spring-festival"],"name":"春节","kind":"off"},
+    {"date":"2023-01-26","ids":["spring-festival"],"name":"春节","kind":"off"},
+    {"date":"2023-01-27","ids":["spring-festival"],"name":"春节","kind":"off"},
+    {"date":"2023-01-28","ids":["spring-festival"],"name":"春节","kind":"work"},
+    {"date":"2023-01-29","ids":["spring-festival"],"name":"春节","kind":"work"},
+    {"date":"2023-04-05","ids":["qingming"],"name":"清明节","kind":"off"},
+    {"date":"2023-04-23","ids":["labour-day"],"name":"劳动节","kind":"work"},
+    {"date":"2023-04-29","ids":["labour-day"],"name":"劳动节","kind":"off"},
+    {"date":"2023-04-30","ids":["labour-day"],"name":"劳动节","kind":"off"},
+    {"date":"2023-05-01","ids":["labour-day"],"name":"劳动节","kind":"off"},
+    {"date":"2023-05-02","ids":["labour-day"],"name":"劳动节","kind":"off"},
+    {"date":"2023-05-03","ids":["labour-day"],"name":"劳动节","kind":"off"},
+    {"date":"2023-05-06","ids":["labour-day"],"name":"劳动节","kind":"work"},
+    {"date":"2023-06-22","ids":["dragon-boat"],"name":"端午节","kind":"off"},
+    {"date":"2023-06-23","ids":["dragon-boat"],"name":"端午节","kind":"off"},
+    {"date":"2023-06-24","ids":["dragon-boat"],"name":"端午节","kind":"off"},
+    {"date":"2023-06-25","ids":["dragon-boat"],"name":"端午节","kind":"work"},
+    {"date":"2023-09-29","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-09-30","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-10-01","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-10-02","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-10-03","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-10-04","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-10-05","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-10-06","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"off"},
+    {"date":"2023-10-07","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"work"},
+    {"date":"2023-10-08","ids":["mid-autumn","national-day"],"name":"中秋节、国庆节","kind":"work"}
+  ]
+}
