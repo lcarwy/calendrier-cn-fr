@@ -6,9 +6,10 @@ import { Legend } from '../components/Legend';
 import { MonthGrid } from '../components/MonthGrid';
 import { MonthHeader } from '../components/MonthHeader';
 import { SettingsDialog } from '../components/SettingsDialog';
-import { PlusIcon, SlidersIcon } from '../components/icons';
+import { InstallIcon, PlusIcon, SlidersIcon } from '../components/icons';
 import { t } from '../i18n';
 import { openNewEvent, storageError } from './events';
+import { installPrompt, promptInstall } from './install';
 
 const REPO_URL = 'https://github.com/lcarwy/calendrier-cn-fr';
 
@@ -20,6 +21,17 @@ export function App() {
       <header class="app-header">
         <h1>{t('app.title')}</h1>
         <div class="header-actions">
+          {installPrompt.value && (
+            <button
+              type="button"
+              class="header-button"
+              aria-label={t('install.buttonLong')}
+              onClick={() => void promptInstall()}
+            >
+              <InstallIcon />
+              <span>{t('install.button')}</span>
+            </button>
+          )}
           <button
             type="button"
             class="header-button primary"

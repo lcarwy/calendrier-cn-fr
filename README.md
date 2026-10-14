@@ -11,7 +11,13 @@ Un calendrier qui affiche dans une même vue :
 
 Vos données restent **dans votre navigateur** : pas de compte, pas de serveur. L'application fonctionne hors ligne et peut être ajoutée à l'écran d'accueil de votre téléphone.
 
-> Projet en cours de développement.
+## Installer sur votre téléphone ou ordinateur
+
+- **iPhone / iPad** (avec Safari) : bouton Partager, puis « Sur l'écran d'accueil ».
+- **Android** (Chrome) : bouton « Installer » en haut de la page, ou menu ⋮ → « Installer l'application ».
+- **Ordinateur** (Chrome, Edge) : bouton « Installer » en haut de la page, ou icône d'installation dans la barre d'adresse.
+
+Vos événements ne sont pas synchronisés entre appareils : utilisez **Réglages → Sauvegarde** pour les exporter et les importer.
 
 ## Sources des données
 

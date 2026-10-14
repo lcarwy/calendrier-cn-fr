@@ -1,0 +1,71 @@
+# 每天检查国务院节假日安排（经 NateScarlet/holiday-cn），有变化就开一个 PR 等人工核对后合并。
+# 校验失败时 workflow 报错（GitHub 会发邮件通知），不会开 PR。
+name: Sync China holidays
+
+on:
+  schedule:
+    - cron: '17 6 * * *' # 每天 UTC 06:17（巴黎 7:17 / 8:17）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write # 用于下面的 keepalive
+
+concurrency:
+  group: sync-cn-holidays
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+
+      - name: Sync and validate
+        run: npm run sync:cn
+        env:
+          SYNC_REPORT_FILE: ${{ runner.temp }}/sync-report.md
+
+      # GITHUB_TOKEN 开的 PR 不会触发 CI，所以在这里先把检查跑完
+      - name: Check data against lunar calendar, then build
+        run: |
+          npm test
+          npm run build
+
+      - name: Prepare PR body
+        run: |
+          {
+            echo "国务院节假日安排有更新。请打开下面的 gov.cn 原文，逐日核对 **Files changed** 中的 休 / 班 日期，确认无误后合并。"
+            echo
+            echo "## 同步报告"
+            echo
+            cat "${{ runner.temp }}/sync-report.md"
+            echo
+            echo "自动测试和构建已在本次运行中通过（含对照农历的法定节日检查）。"
+          } > "${{ runner.temp }}/pr-body.md"
+
+      - name: Open or update pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: data/cn-holidays
+          delete-branch: true
+          add-paths: src/data/cn-holidays/*.json
+          commit-message: 'data(cn-holidays): update official China holiday schedule'
+          title: '中国节假日数据更新（请对照 gov.cn 原文）'
+          body-path: ${{ runner.temp }}/pr-body.md
+          reviewers: lcarwy
+          labels: data
+
+      # 公开仓库 60 天没有提交时，GitHub 会自动停用定时任务。
+      # 每次运行都重新"启用"一次本 workflow，避免在两次年度更新之间被停用。
+      - name: Keep the daily schedule alive
+        if: always()
+        run: gh workflow enable sync-cn-holidays.yml --repo "$GITHUB_REPOSITORY"
+        env:
+          GH_TOKEN: ${{ github.token }}

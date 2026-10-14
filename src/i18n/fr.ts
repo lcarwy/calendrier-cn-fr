@@ -153,6 +153,8 @@ export const fr = {
   'install.ios':
     'Sur iPhone et iPad, touchez Partager puis «\u00a0Sur l’écran d’accueil\u00a0»\u00a0: le calendrier s’ouvrira comme une application et vos données seront mieux conservées.',
   'install.dismiss': 'Masquer',
+  'install.button': 'Installer',
+  'install.buttonLong': 'Installer l’application',
 } as const;
 
 export type MessageKey = keyof typeof fr;

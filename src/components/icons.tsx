@@ -29,3 +29,11 @@ export function PlusIcon() {
     </svg>
   );
 }
+
+export function InstallIcon() {
+  return (
+    <svg {...common}>
+      <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+    </svg>
+  );
+}

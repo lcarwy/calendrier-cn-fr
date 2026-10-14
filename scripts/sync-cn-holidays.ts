@@ -87,8 +87,12 @@ for (let year = from; year <= to; year++) {
   log(`- ${year}：✅ ${existing ? '已更新' : '新增'}（原文：${result.file.papers.join('，')}）`);
 }
 
-// 在 GitHub Actions 中把报告写进运行摘要，供 PR 正文使用
+// 在 GitHub Actions 中：报告写进运行摘要；SYNC_REPORT_FILE 指定时另存一份，作为 PR 正文
+const reportText = `${report.join('\n')}\n`;
 if (process.env.GITHUB_STEP_SUMMARY) {
-  await appendFile(process.env.GITHUB_STEP_SUMMARY, `${report.join('\n')}\n`);
+  await appendFile(process.env.GITHUB_STEP_SUMMARY, reportText);
+}
+if (process.env.SYNC_REPORT_FILE) {
+  await writeFile(process.env.SYNC_REPORT_FILE, reportText, 'utf8');
 }
 if (failed) process.exitCode = 1;
