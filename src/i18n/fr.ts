@@ -122,6 +122,37 @@ export const fr = {
   'color.pink': 'Rose',
   'color.gold': 'Jaune',
   'color.gray': 'Gris',
+
+  'backup.title': 'Sauvegarde',
+  'backup.explain':
+    'Vos événements et réglages ne sont enregistrés que dans ce navigateur, sur cet appareil. Exportez-les régulièrement, ou pour les transférer sur un autre appareil.',
+  'backup.export': 'Exporter mes données',
+  'backup.import': 'Importer une sauvegarde',
+  'backup.lastExport': 'Dernière sauvegarde\u00a0: {date}.',
+  'backup.never': 'Aucune sauvegarde pour l’instant.',
+  'backup.reminder': 'Pensez à exporter vos données de temps en temps.',
+  'backup.found': 'Sauvegarde du {date}\u00a0: {events}.',
+  'backup.foundUndated': 'Sauvegarde valide\u00a0: {events}.',
+  'backup.events.one': '{count} événement',
+  'backup.events.other': '{count} événements',
+  'backup.skipped.one': '{count} événement illisible sera ignoré.',
+  'backup.skipped.other': '{count} événements illisibles seront ignorés.',
+  'backup.merge': 'Fusionner avec mes données',
+  'backup.mergeHint':
+    'Fusionner garde vos événements actuels et ajoute ceux du fichier (en cas de doublon, la version la plus récente l’emporte). Remplacer efface vos événements et réglages actuels.',
+  'backup.replace': 'Remplacer mes données',
+  'backup.replaceConfirm':
+    'Remplacer tous vos événements et réglages par ceux du fichier\u00a0? Cette action est irréversible.',
+  'backup.done': 'Import terminé\u00a0: {events} dans votre calendrier.',
+  'backup.error.json': 'Ce fichier n’est pas une sauvegarde valide (contenu illisible).',
+  'backup.error.format': 'Ce fichier n’est pas une sauvegarde du Calendrier franco-chinois.',
+  'backup.error.version':
+    'Cette sauvegarde vient d’une version plus récente de l’application. Rechargez la page, puis réessayez.',
+  'backup.error.read': 'Impossible de lire ce fichier.',
+
+  'install.ios':
+    'Sur iPhone et iPad, touchez Partager puis «\u00a0Sur l’écran d’accueil\u00a0»\u00a0: le calendrier s’ouvrira comme une application et vos données seront mieux conservées.',
+  'install.dismiss': 'Masquer',
 } as const;
 
 export type MessageKey = keyof typeof fr;

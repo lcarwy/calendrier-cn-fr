@@ -1,6 +1,7 @@
 import { useRef } from 'preact/hooks';
 import { DayDetail } from '../components/DayDetail';
 import { EventEditor } from '../components/EventEditor';
+import { InstallHint } from '../components/InstallHint';
 import { Legend } from '../components/Legend';
 import { MonthGrid } from '../components/MonthGrid';
 import { MonthHeader } from '../components/MonthHeader';
@@ -44,6 +45,7 @@ export function App() {
           {t('events.storageError')}
         </p>
       )}
+      <InstallHint />
       <main class="layout">
         <section class="calendar">
           <MonthHeader />

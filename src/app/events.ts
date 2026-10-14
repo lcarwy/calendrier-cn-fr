@@ -7,7 +7,7 @@ import {
   type CalendarEvent,
   type ColorKey,
 } from '../domain/events';
-import { deleteEvent, getAllEvents, putEvent } from '../storage/events';
+import { deleteEvent, getAllEvents, putEvent, requestPersistentStorage } from '../storage/events';
 import { monthDays, selectedDate } from './state';
 
 export const events = signal<CalendarEvent[]>([]);
@@ -42,7 +42,14 @@ async function persist(action: () => Promise<void>) {
   }
 }
 
+let persistRequested = false;
+
 export function saveEvent(event: CalendarEvent): Promise<void> {
+  // 第一次保存事件时请浏览器不要自动清理本站数据（Firefox 会弹出询问，所以不在启动时请求）
+  if (!persistRequested) {
+    persistRequested = true;
+    void requestPersistentStorage();
+  }
   events.value = [...events.value.filter((e) => e.id !== event.id), event];
   return persist(() => putEvent(event));
 }

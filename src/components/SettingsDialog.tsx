@@ -4,6 +4,7 @@ import { FR_ZONES } from '../domain/fr-holidays';
 import { THEMES } from '../storage/settings';
 import { t } from '../i18n';
 import { appSettings, setLayer, updateSettings } from '../app/state';
+import { BackupSection } from './BackupSection';
 
 const LAYER_KEYS: readonly (keyof Layers)[] = [
   'cnHolidays',
@@ -90,6 +91,8 @@ export function SettingsDialog({ dialogRef }: Props) {
             ))}
           </div>
         </fieldset>
+
+        <BackupSection />
 
         <p class="muted small">{t('settings.storageNote')}</p>
       </div>
