@@ -1,7 +1,8 @@
 import { toYmd } from '../domain/date';
 import { CN_FIRST_DATA_YEAR } from '../domain/cn-holidays';
 import { t } from '../i18n';
-import { formatInstant, formatLongDate, ordinal } from '../i18n/format';
+import { formatDayMonth, formatInstant, formatLongDate, ordinal } from '../i18n/format';
+import { openEditEvent, openNewEvent, selectedOccurrences } from '../app/events';
 import { layers, selectedInfo } from '../app/state';
 
 const quote = (text: string) => `«\u00a0${text}\u00a0»`;
@@ -9,6 +10,7 @@ const quote = (text: string) => `«\u00a0${text}\u00a0»`;
 export function DayDetail() {
   const info = selectedInfo.value;
   const shown = layers.value;
+  const occurrences = selectedOccurrences.value;
   const { lunar } = info;
   // 关闭的图层在详情里也不显示
   const cnHoliday = shown.cnHolidays ? info.cnHoliday : undefined;
@@ -22,6 +24,43 @@ export function DayDetail() {
     <section class="day-detail" aria-live="polite">
       <h2 class="detail-date">{formatLongDate(info.date)}</h2>
       <p class="detail-week">{t('detail.week', { week: info.isoWeek.week })}</p>
+
+      <div class="detail-block">
+        <div class="block-head">
+          <h3>{t('events.mine')}</h3>
+          <button type="button" class="text-button" onClick={() => openNewEvent(info.date)}>
+            + {t('events.addLong')}
+          </button>
+        </div>
+        {occurrences.length > 0 && (
+          <ul class="event-list">
+            {occurrences.map(({ event, start, end }) => (
+              <li key={event.id}>
+                <button type="button" class="event-item" onClick={() => openEditEvent(event)}>
+                  <span class={`event-dot ev-${event.color}`} aria-hidden="true" />
+                  <span class="event-text">
+                    <strong>{event.title}</strong>
+                    <span class="muted small">
+                      {[
+                        event.time,
+                        start !== end &&
+                          t('events.range', {
+                            from: formatDayMonth(start),
+                            to: formatDayMonth(end),
+                          }),
+                        event.recurrence && t('events.everyYear'),
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                    {event.notes && <span class="event-notes">{event.notes}</span>}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       {shown.lunar && (
         <div class="detail-block">

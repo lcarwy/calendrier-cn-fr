@@ -84,6 +84,44 @@ export const fr = {
   'settings.theme.dark': 'Sombre',
   'settings.storageNote':
     'Les réglages sont enregistrés dans ce navigateur uniquement, sur cet appareil.',
+
+  'common.cancel': 'Annuler',
+
+  'events.add': 'Événement',
+  'events.addLong': 'Ajouter un événement',
+  'events.mine': 'Mes événements',
+  'events.new': 'Nouvel événement',
+  'events.edit': 'Modifier l’événement',
+  'events.title': 'Titre',
+  'events.titlePlaceholder': 'Anniversaire, réunion, vol pour Shanghai…',
+  'events.date': 'Date',
+  'events.from': 'Du',
+  'events.to': 'Au',
+  'events.multiDay': 'Sur plusieurs jours',
+  'events.time': 'Heure (facultatif)',
+  'events.color': 'Couleur',
+  'events.yearly': 'Répéter chaque année',
+  'events.notes': 'Notes',
+  'events.save': 'Enregistrer',
+  'events.delete': 'Supprimer',
+  'events.confirmDelete': 'Supprimer «\u00a0{title}\u00a0»\u00a0?',
+  'events.everyYear': 'Chaque année',
+  'events.range': 'du {from} au {to}',
+  'events.more': '+{count}',
+  'events.error.title': 'Indiquez un titre.',
+  'events.error.date': 'Date invalide.',
+  'events.error.end': 'La date de fin doit être postérieure à la date de début.',
+  'events.error.tooLong': 'Un événement ne peut pas durer plus d’un an.',
+  'events.error.time': 'Heure invalide.',
+  'events.storageError':
+    'Impossible d’enregistrer dans ce navigateur (navigation privée ou stockage plein). Vos modifications seront perdues à la fermeture de la page.',
+
+  'color.teal': 'Bleu-vert',
+  'color.orange': 'Orange',
+  'color.purple': 'Violet',
+  'color.pink': 'Rose',
+  'color.gold': 'Jaune',
+  'color.gray': 'Gris',
 } as const;
 
 export type MessageKey = keyof typeof fr;

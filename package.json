@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@preact/signals": "^2.11.3",
+    "idb": "^8.0.4",
     "preact": "^11.0.1",
     "tyme4ts": "^1.5.3"
   },

@@ -1,6 +1,8 @@
 import { useRef } from 'preact/hooks';
 import { addDays, toYmd, type PlainDate } from '../domain/date';
 import { cellLabel, type DayInfo, type Layers } from '../domain/day-info';
+import type { EventOccurrence } from '../domain/events';
+import { monthOccurrences } from '../app/events';
 import { t } from '../i18n';
 import { formatLongDate, formatMonthYear, WEEKDAY_SHORT_NAMES } from '../i18n/format';
 import {
@@ -29,8 +31,9 @@ function focusDate(date: PlainDate) {
 }
 
 /** 读屏用的完整描述 */
-function dayAriaLabel(info: DayInfo, shown: Layers): string {
+function dayAriaLabel(info: DayInfo, shown: Layers, occurrences: EventOccurrence[]): string {
   const parts = [formatLongDate(info.date)];
+  parts.push(...occurrences.map((o) => o.event.title));
   if (shown.lunar) parts.push(`${info.lunar.monthName}${info.lunar.dayName}`);
   if (shown.festivals) parts.push(...info.cnFestivals.map((f) => f.name.fr));
   if (shown.solarTerms && info.solarTerm) parts.push(info.solarTerm.name.fr);
@@ -56,9 +59,13 @@ interface DayCellProps {
   isToday: boolean;
   isSelected: boolean;
   shown: Layers;
+  occurrences: EventOccurrence[];
 }
 
-function DayCell({ info, inMonth, isToday, isSelected, shown }: DayCellProps) {
+/** 格子里最多显示的事件条数，其余显示 +N */
+const MAX_CHIPS = 2;
+
+function DayCell({ info, inMonth, isToday, isSelected, shown, occurrences }: DayCellProps) {
   const label = cellLabel(info, shown);
   const cn = shown.cnHolidays ? info.cnHoliday : undefined;
   const fr = shown.frHolidays ? info.frHolidays : [];
@@ -81,7 +88,7 @@ function DayCell({ info, inMonth, isToday, isSelected, shown }: DayCellProps) {
         class={classes}
         data-date={info.date}
         tabIndex={isSelected ? 0 : -1}
-        aria-label={dayAriaLabel(info, shown)}
+        aria-label={dayAriaLabel(info, shown, occurrences)}
         aria-current={isToday ? 'date' : undefined}
         onClick={() => selectDate(info.date)}
       >
@@ -104,6 +111,21 @@ function DayCell({ info, inMonth, isToday, isSelected, shown }: DayCellProps) {
             {label.text}
           </span>
         )}
+        {occurrences.length > 0 && (
+          <span class="event-chips" aria-hidden="true">
+            {occurrences.slice(0, MAX_CHIPS).map((o) => (
+              <span class={`event-chip ev-${o.event.color}`} key={o.event.id}>
+                {o.event.time && o.isStart && <span class="event-time">{o.event.time}</span>}
+                {o.event.title}
+              </span>
+            ))}
+            {occurrences.length > MAX_CHIPS && (
+              <span class="event-more">
+                {t('events.more', { count: occurrences.length - MAX_CHIPS })}
+              </span>
+            )}
+          </span>
+        )}
         {fr[0] && (
           <span class="fr-tag" aria-hidden="true">
             <span class="fr-short">FR</span>
@@ -121,6 +143,7 @@ export function MonthGrid() {
   const selected = selectedDate.value;
   const todayValue = todayDate.value;
   const shown = layers.value;
+  const occurrencesByDate = monthOccurrences.value;
   const showWeeks = appSettings.value.showWeekNumbers;
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
@@ -195,6 +218,7 @@ export function MonthGrid() {
               isToday={info.date === todayValue}
               isSelected={info.date === selected}
               shown={shown}
+              occurrences={occurrencesByDate.get(info.date) ?? []}
             />
           ))}
         </div>

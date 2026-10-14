@@ -83,9 +83,10 @@ interface DayInfo {
   cnHoliday?: CnHolidayMark;    // kind: 'off' | 'work' | 'statutory-unpublished'
   cnYearStatus: 'published' | 'unpublished' | 'unavailable';
   frHolidays: FrHoliday[];
-  // events 在第 8 步加入
 }
 ```
+
+自定义事件**不放进 DayInfo**（DayInfo 按月缓存，事件随时会变）：UI 用 `src/domain/events` 的 `occurrencesInRange()` 单独取，见 `src/app/events.ts`。
 
 ## 5. 中国法定节假日与调休
 
@@ -218,7 +219,11 @@ interface CalendarEvent {
   updatedAt: string;
 }
 ```
+- 实现：模型与展开在 `src/domain/events/`（纯函数，有单测）；存储在 IndexedDB 库 `calendrier-cn-fr` 的 `events` 表（`src/storage/events.ts`，用 `idb`）。
+- 颜色 `ColorKey`：teal / orange / purple / pink / gold / gray，**故意避开红色和蓝色**，以免和中国、法国假日混淆。默认 teal。
 - 2 月 29 日的每年重复事件，平年显示在 2 月 28 日。
+- 每年重复的跨年多日事件（如 12/30–1/2），在下一年 1 月也要显示（展开时从 `from` 的前一年开始算）。
+- 格子里最多显示 2 条事件，其余显示 +N；手机上显示为彩色小圆点。
 - 备份格式：`{ app: "calendrier-cn-fr", schemaVersion, exportedAt, settings, events }`。导入时让用户选"合并（按 id，`updatedAt` 新者胜）"或"替换"。
 
 ## 10. UI / UX 规则
@@ -313,7 +318,7 @@ push 到 `main` 会触发 `.github/workflows/deploy.yml`：格式检查 → 测�
 - [x] 5. `getDayInfo` 合并层
 - [x] 6. 月视图 UI、日详情、移动端、深色模式、图例
 - [x] 7. 设置（法国地区、图层开关、主题）+ 持久化
-- [ ] 8. 自定义事件：IndexedDB、增删改、多日、每年重复
+- [x] 8. 自定义事件：IndexedDB、增删改、多日、每年重复
 - [ ] 9. 备份导出/导入、`storage.persist()`、iOS 安装引导
 - [ ] 10. PWA：manifest、图标、离线缓存、更新
 - [ ] 11. 中国数据定时同步 workflow（开 PR）

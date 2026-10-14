@@ -1,11 +1,13 @@
 import { useRef } from 'preact/hooks';
 import { DayDetail } from '../components/DayDetail';
+import { EventEditor } from '../components/EventEditor';
 import { Legend } from '../components/Legend';
 import { MonthGrid } from '../components/MonthGrid';
 import { MonthHeader } from '../components/MonthHeader';
 import { SettingsDialog } from '../components/SettingsDialog';
-import { SlidersIcon } from '../components/icons';
+import { PlusIcon, SlidersIcon } from '../components/icons';
 import { t } from '../i18n';
+import { openNewEvent, storageError } from './events';
 
 const REPO_URL = 'https://github.com/lcarwy/calendrier-cn-fr';
 
@@ -19,6 +21,15 @@ export function App() {
         <div class="header-actions">
           <button
             type="button"
+            class="header-button primary"
+            aria-label={t('events.addLong')}
+            onClick={() => openNewEvent()}
+          >
+            <PlusIcon />
+            <span>{t('events.add')}</span>
+          </button>
+          <button
+            type="button"
             class="header-button"
             aria-label={t('settings.open')}
             onClick={() => settingsRef.current?.showModal()}
@@ -28,6 +39,11 @@ export function App() {
           </button>
         </div>
       </header>
+      {storageError.value && (
+        <p class="notice storage-error" role="alert">
+          {t('events.storageError')}
+        </p>
+      )}
       <main class="layout">
         <section class="calendar">
           <MonthHeader />
@@ -47,6 +63,7 @@ export function App() {
         </p>
       </footer>
       <SettingsDialog dialogRef={settingsRef} />
+      <EventEditor />
     </>
   );
 }
