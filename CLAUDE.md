@@ -113,11 +113,13 @@ interface DayInfo {
 
 ### 5.3 同步流程（每年更新机制）
 
-1. `.github/workflows/sync-cn-holidays.yml` 每天定时运行（成本低；通知发布时间不固定，偶尔也有年中临时调整）。
+1. `.github/workflows/sync-cn-holidays.yml` 每天 UTC 06:17 运行（成本低；通知发布时间不固定，偶尔也有年中临时调整），也可在 Actions 页面手动运行（Run workflow）。
 2. 运行 `scripts/sync-cn-holidays.ts`：拉取 `当前年-1` 到 `当前年+1` 的文件 → 校验 → 规范化写入 `src/data/cn-holidays/YYYY.json`。
 3. 有变化时用 `peter-evans/create-pull-request` 开 PR，PR 正文附 gov.cn 原文链接，**人工对照原文后合并**；合并后 `deploy.yml` 自动发布，PWA 下次打开时自动更新。
 4. GITHUB_TOKEN 创建的 PR 不会触发其他 workflow，所以**校验必须在同步 workflow 内完成**，失败则不开 PR 并让 workflow 报错。
-5. 仓库设置需开启 "Allow GitHub Actions to create and approve pull requests"。
+5. 仓库设置需开启 "Allow GitHub Actions to create and approve pull requests"（Settings → Actions → General → Workflow permissions），由用户本人在网页上开启。
+6. PR 自动请 `lcarwy` 审核（会收到通知），分支名固定为 `data/cn-holidays`，打 `data` 标签。PR 正文来自脚本报告（`SYNC_REPORT_FILE`）。
+7. **防止定时任务被停用**：公开仓库 60 天无提交时 GitHub 会停用 cron。workflow 每次运行最后一步执行 `gh workflow enable` 保活（需要 `actions: write`）。若仍收到停用邮件，到 Actions 页面点 Enable 即可。
 
 **校验规则**（实现见 `scripts/lib/cn-holidays.ts`；错误 = 该年不写入且退出码 1，警告 = 写入但在报告中标出）：
 - 错误：`papers` 为空或链接域名不是 `gov.cn`；日期不合法、重复、超出 `上一年-12-01 .. 当年-12-31`；2025 年起 1/1、5/1、5/2、10/1–10/3 没有标为放假；本地已有数据而上游变成空文件
@@ -294,7 +296,7 @@ push 到 `main` 会触发 `.github/workflows/deploy.yml`：格式检查 → 测�
 ## 14. 发布载体（别人怎么用）
 
 - **网页**：发布在 `https://<GitHub用户名>.github.io/calendrier-cn-fr/`。任何设备的浏览器打开即用，不用安装，也不用注册。分享这个链接即可。
-- **"安装"成应用（PWA）**：同一个网页可以添加到主屏幕，之后有自己的图标、全屏打开、离线可用。
+- **"安装"成应用（PWA）**：同一个网页可以添加到主屏幕，之后有自己的图标、全屏打开、离线可用。实现：`vite-plugin-pwa`（`vite.config.ts`，autoUpdate，预缓存全部静态文件；节假日数据打包在 JS 里，所以离线也完整）；图标由 `public/logo.svg` 用 `npx pwa-assets-generator --preset minimal-2023 public/logo.svg` 生成；Android / 电脑出现 `beforeinstallprompt` 时页面顶部显示 « Installer » 按钮（`src/app/install.ts`）。
   - Android（Chrome）：菜单 → *Installer l'application*（或页面上的安装按钮）
   - iPhone/iPad（**必须用 Safari**）：分享 → *Sur l'écran d'accueil*
   - 电脑（Chrome / Edge）：地址栏右侧的安装图标；Mac Safari：文件 → 添加到程序坞
@@ -322,6 +324,6 @@ push 到 `main` 会触发 `.github/workflows/deploy.yml`：格式检查 → 测�
 - [x] 7. 设置（法国地区、图层开关、主题）+ 持久化
 - [x] 8. 自定义事件：IndexedDB、增删改、多日、每年重复
 - [x] 9. 备份导出/导入、`storage.persist()`、iOS 安装引导
-- [ ] 10. PWA：manifest、图标、离线缓存、更新
-- [ ] 11. 中国数据定时同步 workflow（开 PR）
+- [x] 10. PWA：manifest、图标、离线缓存、更新
+- [x] 11. 中国数据定时同步 workflow（开 PR）——需用户开启仓库设置后首次手动运行验证
 - [ ] 12. 验收：iPhone Safari / Android Chrome 真机，对照 gov.cn 原文
