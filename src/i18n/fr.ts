@@ -60,6 +60,30 @@ export const fr = {
   'footer.privacy': 'Vos données restent dans votre navigateur.',
   'footer.sources': 'Sources des données',
   'footer.code': 'Code source',
+
+  'common.close': 'Fermer',
+
+  'grid.week': 'Sem.',
+  'grid.weekNumber': 'Semaine {week}',
+
+  'settings.open': 'Réglages',
+  'settings.title': 'Réglages',
+  'settings.zone': 'Jours fériés français',
+  'settings.zone.metropole': 'France métropolitaine',
+  'settings.zone.alsace-moselle': 'Alsace-Moselle (avec Vendredi saint et Saint-Étienne)',
+  'settings.display': 'Affichage',
+  'settings.layer.cnHolidays': 'Congés chinois (休 / 班)',
+  'settings.layer.frHolidays': 'Jours fériés français',
+  'settings.layer.lunar': 'Dates du calendrier lunaire',
+  'settings.layer.solarTerms': 'Termes solaires',
+  'settings.layer.festivals': 'Fêtes traditionnelles chinoises',
+  'settings.weekNumbers': 'Numéros de semaine',
+  'settings.theme': 'Thème',
+  'settings.theme.auto': 'Automatique',
+  'settings.theme.light': 'Clair',
+  'settings.theme.dark': 'Sombre',
+  'settings.storageNote':
+    'Les réglages sont enregistrés dans ce navigateur uniquement, sur cet appareil.',
 } as const;
 
 export type MessageKey = keyof typeof fr;

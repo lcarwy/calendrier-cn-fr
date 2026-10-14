@@ -4,6 +4,7 @@ import { cellLabel, type DayInfo, type Layers } from '../domain/day-info';
 import { t } from '../i18n';
 import { formatLongDate, formatMonthYear, WEEKDAY_SHORT_NAMES } from '../i18n/format';
 import {
+  appSettings,
   layers,
   monthDays,
   selectDate,
@@ -120,6 +121,7 @@ export function MonthGrid() {
   const selected = selectedDate.value;
   const todayValue = todayDate.value;
   const shown = layers.value;
+  const showWeeks = appSettings.value.showWeekNumbers;
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const onKeyDown = (e: KeyboardEvent) => {
@@ -155,7 +157,7 @@ export function MonthGrid() {
 
   return (
     <div
-      class="month-grid"
+      class={showWeeks ? 'month-grid with-weeks' : 'month-grid'}
       role="grid"
       aria-label={t('nav.calendar', { month: formatMonthYear(viewMonth.value) })}
       onKeyDown={onKeyDown}
@@ -163,6 +165,11 @@ export function MonthGrid() {
       onTouchEnd={onTouchEnd}
     >
       <div role="row" class="week-row weekday-row">
+        {showWeeks && (
+          <div role="columnheader" class="week-num">
+            {t('grid.week')}
+          </div>
+        )}
         {WEEKDAY_SHORT_NAMES.map((name) => (
           <div role="columnheader" class="weekday" key={name}>
             {name}
@@ -171,6 +178,15 @@ export function MonthGrid() {
       </div>
       {weeks.map((week) => (
         <div role="row" class="week-row" key={week[0]?.date}>
+          {showWeeks && week[0] && (
+            <div
+              role="rowheader"
+              class="week-num"
+              aria-label={t('grid.weekNumber', { week: week[0].isoWeek.week })}
+            >
+              {week[0].isoWeek.week}
+            </div>
+          )}
           {week.map((info) => (
             <DayCell
               key={info.date}

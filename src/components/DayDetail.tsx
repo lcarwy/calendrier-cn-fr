@@ -2,13 +2,19 @@ import { toYmd } from '../domain/date';
 import { CN_FIRST_DATA_YEAR } from '../domain/cn-holidays';
 import { t } from '../i18n';
 import { formatInstant, formatLongDate, ordinal } from '../i18n/format';
-import { selectedInfo } from '../app/state';
+import { layers, selectedInfo } from '../app/state';
 
 const quote = (text: string) => `«\u00a0${text}\u00a0»`;
 
 export function DayDetail() {
   const info = selectedInfo.value;
-  const { lunar, solarTerm, cnFestivals, cnHoliday, frHolidays } = info;
+  const shown = layers.value;
+  const { lunar } = info;
+  // 关闭的图层在详情里也不显示
+  const cnHoliday = shown.cnHolidays ? info.cnHoliday : undefined;
+  const frHolidays = shown.frHolidays ? info.frHolidays : [];
+  const cnFestivals = shown.festivals ? info.cnFestivals : [];
+  const solarTerm = shown.solarTerms ? info.solarTerm : undefined;
   const year = toYmd(info.date).year;
   const hasEvent = Boolean(cnHoliday || frHolidays.length || cnFestivals.length || solarTerm);
 
@@ -17,22 +23,24 @@ export function DayDetail() {
       <h2 class="detail-date">{formatLongDate(info.date)}</h2>
       <p class="detail-week">{t('detail.week', { week: info.isoWeek.week })}</p>
 
-      <div class="detail-block">
-        <h3>{t('detail.lunarTitle')}</h3>
-        <p class="detail-lunar" lang="zh-CN">
-          {lunar.monthName}
-          {lunar.dayName}
-        </p>
-        <p>
-          {t(lunar.isLeapMonth ? 'detail.lunarDateLeap' : 'detail.lunarDate', {
-            day: ordinal(lunar.day),
-            month: ordinal(lunar.month),
-          })}
-        </p>
-        <p class="muted">
-          {t('detail.lunarYear', { ganzhi: lunar.yearGanzhi, zodiac: lunar.zodiac.fr })}
-        </p>
-      </div>
+      {shown.lunar && (
+        <div class="detail-block">
+          <h3>{t('detail.lunarTitle')}</h3>
+          <p class="detail-lunar" lang="zh-CN">
+            {lunar.monthName}
+            {lunar.dayName}
+          </p>
+          <p>
+            {t(lunar.isLeapMonth ? 'detail.lunarDateLeap' : 'detail.lunarDate', {
+              day: ordinal(lunar.day),
+              month: ordinal(lunar.month),
+            })}
+          </p>
+          <p class="muted">
+            {t('detail.lunarYear', { ganzhi: lunar.yearGanzhi, zodiac: lunar.zodiac.fr })}
+          </p>
+        </div>
+      )}
 
       {cnHoliday && (
         <div class="detail-block">
@@ -129,7 +137,7 @@ export function DayDetail() {
       )}
 
       {!hasEvent && <p class="muted">{t('detail.nothing')}</p>}
-      {info.cnYearStatus === 'unavailable' && (
+      {shown.cnHolidays && info.cnYearStatus === 'unavailable' && (
         <p class="muted">{t('detail.cnUnavailable', { year: CN_FIRST_DATA_YEAR })}</p>
       )}
     </section>

@@ -1,5 +1,5 @@
-// 全局界面状态（Preact signals）。设置的持久化在第 7 步加入。
-import { computed, signal } from '@preact/signals';
+// 全局界面状态（Preact signals）。设置自动保存到 localStorage。
+import { computed, effect, signal } from '@preact/signals';
 import {
   addMonths,
   daysInMonth,
@@ -10,13 +10,8 @@ import {
   type PlainDate,
   type YearMonth,
 } from '../domain/date';
-import {
-  ALL_LAYERS,
-  getDayInfo,
-  getMonthInfo,
-  type DaySettings,
-  type Layers,
-} from '../domain/day-info';
+import { getDayInfo, getMonthInfo, type DaySettings, type Layers } from '../domain/day-info';
+import { loadSettings, saveSettings, type AppSettings } from '../storage/settings';
 
 export const MIN_YEAR = 1990;
 export const MAX_YEAR = 2100;
@@ -24,11 +19,23 @@ export const MAX_YEAR = 2100;
 export const todayDate = signal<PlainDate>(today());
 export const viewMonth = signal<YearMonth>(yearMonthOf(todayDate.value));
 export const selectedDate = signal<PlainDate>(todayDate.value);
-export const settings = signal<DaySettings>({ frZone: 'metropole' });
-export const layers = signal<Layers>(ALL_LAYERS);
 
-export const monthDays = computed(() => getMonthInfo(viewMonth.value, settings.value));
-export const selectedInfo = computed(() => getDayInfo(selectedDate.value, settings.value));
+export const appSettings = signal<AppSettings>(loadSettings());
+export const daySettings = computed<DaySettings>(() => ({ frZone: appSettings.value.frZone }));
+export const layers = computed<Layers>(() => appSettings.value.layers);
+
+export const monthDays = computed(() => getMonthInfo(viewMonth.value, daySettings.value));
+export const selectedInfo = computed(() => getDayInfo(selectedDate.value, daySettings.value));
+
+export function updateSettings(patch: Partial<Omit<AppSettings, 'schemaVersion'>>): void {
+  appSettings.value = { ...appSettings.value, ...patch };
+}
+
+export function setLayer(key: keyof Layers, visible: boolean): void {
+  updateSettings({ layers: { ...appSettings.value.layers, [key]: visible } });
+}
+
+effect(() => saveSettings(appSettings.value));
 
 const inRange = (year: number) => year >= MIN_YEAR && year <= MAX_YEAR;
 const sameMonth = (a: YearMonth, b: YearMonth) => a.year === b.year && a.month === b.month;
