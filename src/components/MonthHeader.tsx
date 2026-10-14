@@ -3,7 +3,15 @@ import { lunarDateOf } from '../domain/lunar';
 import { cnYearStatus, CN_FIRST_DATA_YEAR } from '../domain/cn-holidays';
 import { t } from '../i18n';
 import { MONTH_NAMES } from '../i18n/format';
-import { goToMonth, goToToday, MAX_YEAR, MIN_YEAR, shiftMonth, viewMonth } from '../app/state';
+import {
+  goToMonth,
+  goToToday,
+  layers,
+  MAX_YEAR,
+  MIN_YEAR,
+  shiftMonth,
+  viewMonth,
+} from '../app/state';
 
 const YEARS = Array.from({ length: MAX_YEAR - MIN_YEAR + 1 }, (_, i) => MIN_YEAR + i);
 
@@ -17,7 +25,8 @@ function lunarYearsLabel(year: number, month: number): string {
 
 export function MonthHeader() {
   const { year, month } = viewMonth.value;
-  const status = cnYearStatus(year);
+  const shown = layers.value;
+  const status = shown.cnHolidays ? cnYearStatus(year) : 'published';
 
   return (
     <div class="month-header">
@@ -70,7 +79,7 @@ export function MonthHeader() {
         </button>
       </div>
 
-      <p class="lunar-years">{lunarYearsLabel(year, month)}</p>
+      {shown.lunar && <p class="lunar-years">{lunarYearsLabel(year, month)}</p>}
 
       {status === 'unpublished' && (
         <p class="notice" role="note">

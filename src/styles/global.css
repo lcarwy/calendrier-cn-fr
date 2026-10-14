@@ -45,7 +45,12 @@
   }
 }
 
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
 :root[data-theme='dark'] {
+  color-scheme: dark;
   --bg: #161412;
   --surface: #211e1b;
   --fg: #f2efeb;

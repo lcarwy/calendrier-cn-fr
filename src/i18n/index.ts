@@ -12,3 +12,11 @@ export function t(key: MessageKey, params?: Params): string {
     name in params ? String(params[name]) : match,
   );
 }
+
+const pluralRules = new Intl.PluralRules('fr-FR');
+
+/** 法语单复数：0 和 1 用 .one，其余用 .other */
+export function tCount(base: 'backup.events' | 'backup.skipped', count: number): string {
+  const form = pluralRules.select(count) === 'one' ? 'one' : 'other';
+  return t(`${base}.${form}`, { count });
+}

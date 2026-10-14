@@ -1,14 +1,22 @@
 import { toYmd } from '../domain/date';
 import { CN_FIRST_DATA_YEAR } from '../domain/cn-holidays';
 import { t } from '../i18n';
-import { formatInstant, formatLongDate, ordinal } from '../i18n/format';
-import { selectedInfo } from '../app/state';
+import { formatDayMonth, formatInstant, formatLongDate, ordinal } from '../i18n/format';
+import { openEditEvent, openNewEvent, selectedOccurrences } from '../app/events';
+import { layers, selectedInfo } from '../app/state';
 
 const quote = (text: string) => `«\u00a0${text}\u00a0»`;
 
 export function DayDetail() {
   const info = selectedInfo.value;
-  const { lunar, solarTerm, cnFestivals, cnHoliday, frHolidays } = info;
+  const shown = layers.value;
+  const occurrences = selectedOccurrences.value;
+  const { lunar } = info;
+  // 关闭的图层在详情里也不显示
+  const cnHoliday = shown.cnHolidays ? info.cnHoliday : undefined;
+  const frHolidays = shown.frHolidays ? info.frHolidays : [];
+  const cnFestivals = shown.festivals ? info.cnFestivals : [];
+  const solarTerm = shown.solarTerms ? info.solarTerm : undefined;
   const year = toYmd(info.date).year;
   const hasEvent = Boolean(cnHoliday || frHolidays.length || cnFestivals.length || solarTerm);
 
@@ -18,21 +26,60 @@ export function DayDetail() {
       <p class="detail-week">{t('detail.week', { week: info.isoWeek.week })}</p>
 
       <div class="detail-block">
-        <h3>{t('detail.lunarTitle')}</h3>
-        <p class="detail-lunar" lang="zh-CN">
-          {lunar.monthName}
-          {lunar.dayName}
-        </p>
-        <p>
-          {t(lunar.isLeapMonth ? 'detail.lunarDateLeap' : 'detail.lunarDate', {
-            day: ordinal(lunar.day),
-            month: ordinal(lunar.month),
-          })}
-        </p>
-        <p class="muted">
-          {t('detail.lunarYear', { ganzhi: lunar.yearGanzhi, zodiac: lunar.zodiac.fr })}
-        </p>
+        <div class="block-head">
+          <h3>{t('events.mine')}</h3>
+          <button type="button" class="text-button" onClick={() => openNewEvent(info.date)}>
+            + {t('events.addLong')}
+          </button>
+        </div>
+        {occurrences.length > 0 && (
+          <ul class="event-list">
+            {occurrences.map(({ event, start, end }) => (
+              <li key={event.id}>
+                <button type="button" class="event-item" onClick={() => openEditEvent(event)}>
+                  <span class={`event-dot ev-${event.color}`} aria-hidden="true" />
+                  <span class="event-text">
+                    <strong>{event.title}</strong>
+                    <span class="muted small">
+                      {[
+                        event.time,
+                        start !== end &&
+                          t('events.range', {
+                            from: formatDayMonth(start),
+                            to: formatDayMonth(end),
+                          }),
+                        event.recurrence && t('events.everyYear'),
+                      ]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                    {event.notes && <span class="event-notes">{event.notes}</span>}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
+
+      {shown.lunar && (
+        <div class="detail-block">
+          <h3>{t('detail.lunarTitle')}</h3>
+          <p class="detail-lunar" lang="zh-CN">
+            {lunar.monthName}
+            {lunar.dayName}
+          </p>
+          <p>
+            {t(lunar.isLeapMonth ? 'detail.lunarDateLeap' : 'detail.lunarDate', {
+              day: ordinal(lunar.day),
+              month: ordinal(lunar.month),
+            })}
+          </p>
+          <p class="muted">
+            {t('detail.lunarYear', { ganzhi: lunar.yearGanzhi, zodiac: lunar.zodiac.fr })}
+          </p>
+        </div>
+      )}
 
       {cnHoliday && (
         <div class="detail-block">
@@ -129,7 +176,7 @@ export function DayDetail() {
       )}
 
       {!hasEvent && <p class="muted">{t('detail.nothing')}</p>}
-      {info.cnYearStatus === 'unavailable' && (
+      {shown.cnHolidays && info.cnYearStatus === 'unavailable' && (
         <p class="muted">{t('detail.cnUnavailable', { year: CN_FIRST_DATA_YEAR })}</p>
       )}
     </section>

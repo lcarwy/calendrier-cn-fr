@@ -48,3 +48,11 @@ export function formatInstant(epochMs: number, timeZone: string): string {
 export function ordinal(n: number): string {
   return n === 1 ? '1er' : `${n}ᵉ`;
 }
+
+const dayMonth = formatter({ day: 'numeric', month: 'long' });
+
+/** 30 octobre */
+export function formatDayMonth(date: PlainDate): string {
+  const { year, month, day } = toYmd(date);
+  return dayMonth.format(utc(year, month, day));
+}
